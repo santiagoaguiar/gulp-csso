@@ -22,10 +22,14 @@ module.exports = function (optimise) {
         if (file.isStream()) {
             return done(new gutil.PluginError(PLUGIN_NAME, "Streaming not supported"));
         } else {
-            var optimised = csso.justDoIt(String(file.contents), optimise);
-            file.contents = new Buffer(optimised);
-            stream.push(file);
-            done();
+            try {
+                var optimised = csso.justDoIt(String(file.contents), optimise);
+                file.contents = new Buffer(optimised);
+                stream.push(file);
+                done();
+            } catch(e) {
+                done(new gutil.PluginError(PLUGIN_NAME, e));
+            }
         }
     };
 
